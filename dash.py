@@ -2,7 +2,6 @@ import streamlit as st
 import os.path as path
 import os
 import sys
-from dashboard.help_dash import app_ttl,app_icon,hide_streamlit_style, get_app_logo, get_company_logo
 import pandas as pd
 import plotly.express as px
 import json
