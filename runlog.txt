@@ -1,0 +1,364 @@
+
+RUN LOG
+
+
+Procedure performed at: 2025/5/19, 15:55
+
+
+The value of parameters used are:
+
+ - run_year: 2024
+
+
+ - run_mnth: 12
+
+
+ - upload_type: extend_existing_table
+
+
+ - period_check_is_error: no
+
+
+ - pay_patt_tol: 0.1
+
+
+ - apply_pre_check_corrections: yes
+
+
+ - print_msgs: no
+
+
+ - ratio_round: 4
+
+
+ - dollar_round: 2
+
+
+ - data_pth: C:\1_APPS\OWS_17_Data_Preparer\1_input\policy_data_2024.xlsx
+
+
+ - pd_sel_sht: no
+
+
+ - ratio_fold_pth: C:\1_APPS\OWS_17_Data_Preparer\1_input\xlsx_folder
+
+
+ - source_ext: xlsx
+
+
+ - sel_sht: yes
+
+
+ - sht_name: tbl
+
+
+ - data_source_type: access_db
+
+
+ - input_db_path: C:\1_APPS\OWS_17_Data_Preparer\1_input\ifrs17_input_db.accdb
+
+
+Validation of required columns completed. All the required columns are present in the source file. Procedure will continue.
+
+Validation of records completed. No wrong records identified in the source file. Procedure will continue.
+
+Procedure will continue, but there are some suspicious records in data.To see how suspicious data is defined per column: open file static.py and see validation_warnings_dict dictionary. There were following warnings in data identified:
+ - column 'prm_freq' contains values not in [0, 1, 2, 4, 12]
+ - column 'prem' has values outside of range<-100000,100000>
+ - column 'upr' has values outside of range<-100000,100000>
+ - column 'upr_acq_exp' has values outside of range<-100000,100000>
+ - there are records where prem is negative and is_reins = 0
+ - there are records where upr is negative and is_reins = 0
+ - there are records where prem is negative and is_reins = 0
+ - there are records where prem is in range <-0.1, 0.1>
+
+The key metrics of records which caused warnings:
+ - sum of annual premiums = -27240260.11
+ - sum of UPR = -56863831.31
+ - sum of DAC = -19857520.47
+
+
+The records containing suspicious data are printed below:
+
+Wrong records removed. Number of removed records: 1253
+Go to function delete_wrong_records in script main.py to see how wrong records were defined.
+The key metrics of removed records:
+ - sum of annual premiums = 1598929.65
+ - sum of UPR = 638696.27
+ - sum of DAC = 124319.08
+
+The following rows have been removed:
+ - rows where poli_start_year > 2024
+ - rows where poli_end_year < 2024
+ - rows where prem_end_year < 2024
+The deleted records have been saved in file './2_results/removed_records.xlsx'.They are also printed below:
+
+EoP policies saved here: C:\1_APPS\OWS_17_Data_Preparer\2_results
+
+PoS policies saved here: C:\1_APPS\OWS_17_Data_Preparer\2_results
+
+PoS modelpoints loaded into DB: C:\1_APPS\OWS_17_Data_Preparer\1_input\ifrs17_input_db.accdb
+
+EoP modelpoints loaded into DB: C:\1_APPS\OWS_17_Data_Preparer\1_input\ifrs17_input_db.accdb
+
+Finished
+
+RUN LOG
+
+
+Procedure performed at: 2025/5/28, 15:50
+
+
+The value of parameters used are:
+
+ - run_year: 2024
+
+
+ - run_mnth: 12
+
+
+ - upload_type: extend_existing_table
+
+
+ - period_check_is_error: no
+
+
+ - pay_patt_tol: 0.1
+
+
+ - apply_pre_check_corrections: yes
+
+
+ - print_msgs: no
+
+
+ - ratio_round: 4
+
+
+ - dollar_round: 2
+
+
+ - data_pth: C:\1_APPS\OWS_17_Data_Preparer\1_input\policy_data_2024.xlsx
+
+
+ - pd_sel_sht: no
+
+
+ - ratio_fold_pth: C:\1_APPS\OWS_17_Data_Preparer\1_input\xlsx_folder
+
+
+ - source_ext: xlsx
+
+
+ - sel_sht: yes
+
+
+ - sht_name: tbl
+
+
+ - data_source_type: access_db
+
+
+ - input_db_path: C:\1_APPS\OWS_17_Data_Preparer\1_input\ifrs17_input_db.accdb
+
+
+ 1.1. Working on acq_exp_pc_tbl:
+
+Validation of required columns completed. All the required columns are present in the source acq_exp_pc_tbl file. Procedure will continue.
+
+Validation of records completed. No wrong records identified in the source file: acq_exp_pc_tbl. Procedure will continue.
+
+Check for potential warnings completed. No records causing warnings identified in the source file: acq_exp_pc_tbl. Procedure will continue.
+
+ Duplicates checks completed in file acq_exp_pc_tbl. No errors identified.
+
+ There were following problems identified in file acq_exp_pc_tbl:
+
+ - for (group:53.0, y:2024.0, m:6.0) 'prev_pc':0.5598 not equal to 'curr_pc':0.5445 from y:2023.0
+ - for (group:58.0, y:2024.0, m:6.0) 'prev_pc':0.4519 not equal to 'curr_pc':0.4566 from y:2023.0
+ - for (group:59.0, y:2024.0, m:6.0) 'prev_pc':0.7906 not equal to 'curr_pc':0.4751 from y:2023.0
+ - for (group:63.0, y:2024.0, m:6.0) 'prev_pc':0.4213 not equal to 'curr_pc':0.3926 from y:2023.0
+ - for (group:65.0, y:2024.0, m:6.0) 'prev_pc':0.38 not equal to 'curr_pc':0.3669 from y:2023.0
+ - for (group:1.0, y:2024.0, m:12.0) 'prev_pc':0.2525 not equal to 'curr_pc':0.2503 from y:2023.0
+ - for (group:3.0, y:2024.0, m:12.0) 'prev_pc':0.2814 not equal to 'curr_pc':0.3163 from y:2023.0
+ - for (group:8.0, y:2024.0, m:12.0) 'prev_pc':0.0861 not equal to 'curr_pc':0.0827 from y:2023.0
+ - for (group:9.0, y:2024.0, m:12.0) 'prev_pc':0.2338 not equal to 'curr_pc':0.2325 from y:2023.0
+ - for (group:10.0, y:2024.0, m:12.0) 'prev_pc':0.1048 not equal to 'curr_pc':0.1055 from y:2023.0
+ - for (group:13.0, y:2024.0, m:12.0) 'prev_pc':0.1707 not equal to 'curr_pc':0.1738 from y:2023.0
+ - for (group:15.0, y:2024.0, m:12.0) 'prev_pc':0.2448 not equal to 'curr_pc':0.2421 from y:2023.0
+ - for (group:16.0, y:2024.0, m:12.0) 'prev_pc':0.2096 not equal to 'curr_pc':0.1922 from y:2023.0
+ - for (group:17.0, y:2024.0, m:12.0) 'prev_pc':0.1789 not equal to 'curr_pc':0.1792 from y:2023.0
+ - for (group:18.0, y:2024.0, m:12.0) 'prev_pc':0.2295 not equal to 'curr_pc':0.2188 from y:2023.0
+ - for (group:23.0, y:2024.0, m:12.0) 'prev_pc':0.1359 not equal to 'curr_pc':0.1362 from y:2023.0
+ - for (group:27.0, y:2024.0, m:12.0) 'prev_pc':0.1705 not equal to 'curr_pc':0.1684 from y:2023.0
+ - for (group:28.0, y:2024.0, m:12.0) 'prev_pc':0.2565 not equal to 'curr_pc':0.2636 from y:2023.0
+ - for (group:33.0, y:2024.0, m:12.0) 'prev_pc':0.1758 not equal to 'curr_pc':0.1744 from y:2023.0
+ - for (group:37.0, y:2024.0, m:12.0) 'prev_pc':0.2023 not equal to 'curr_pc':0.2005 from y:2023.0
+
+Run will continue, but if you wish to stop on such errors, change value of 'Consistency curr_pc vs prev_pc check is error' parameter to 'yes'.
+
+ 1.2. Working on cost_pc_tbl:
+
+Validation of required columns completed. All the required columns are present in the source cost_pc_tbl file. Procedure will continue.
+
+Validation of records completed. No wrong records identified in the source file: cost_pc_tbl. Procedure will continue.
+
+Check for potential warnings completed. No records causing warnings identified in the source file: cost_pc_tbl. Procedure will continue.
+
+ Duplicates checks completed in file cost_pc_tbl. No errors identified.
+
+ There were following problems identified in file cost_pc_tbl:
+
+ - for (group:1.0, y:2024.0, m:12.0) 'prev_pc':0.0467 not equal to 'curr_pc':0.0427 from y:2023.0
+ - for (group:3.0, y:2024.0, m:12.0) 'prev_pc':0.0583 not equal to 'curr_pc':0.0354 from y:2023.0
+ - for (group:6.0, y:2024.0, m:12.0) 'prev_pc':0.0583 not equal to 'curr_pc':0.0299 from y:2023.0
+ - for (group:8.0, y:2024.0, m:12.0) 'prev_pc':0.0476 not equal to 'curr_pc':0.0307 from y:2023.0
+ - for (group:9.0, y:2024.0, m:12.0) 'prev_pc':0.1109 not equal to 'curr_pc':0.0299 from y:2023.0
+ - for (group:10.0, y:2024.0, m:12.0) 'prev_pc':0.0631 not equal to 'curr_pc':0.0594 from y:2023.0
+ - for (group:13.0, y:2024.0, m:12.0) 'prev_pc':0.0493 not equal to 'curr_pc':0.0463 from y:2023.0
+ - for (group:15.0, y:2024.0, m:12.0) 'prev_pc':0.0667 not equal to 'curr_pc':0.1218 from y:2023.0
+ - for (group:17.0, y:2024.0, m:12.0) 'prev_pc':0.0511 not equal to 'curr_pc':0.0441 from y:2023.0
+ - for (group:18.0, y:2024.0, m:12.0) 'prev_pc':0.0759 not equal to 'curr_pc':0.0302 from y:2023.0
+ - for (group:21.0, y:2024.0, m:12.0) 'prev_pc':0.0467 not equal to 'curr_pc':0.0427 from y:2023.0
+ - for (group:23.0, y:2024.0, m:12.0) 'prev_pc':0.0493 not equal to 'curr_pc':0.0463 from y:2023.0
+ - for (group:27.0, y:2024.0, m:12.0) 'prev_pc':0.0511 not equal to 'curr_pc':0.0441 from y:2023.0
+ - for (group:28.0, y:2024.0, m:12.0) 'prev_pc':0.0476 not equal to 'curr_pc':0.0307 from y:2023.0
+ - for (group:33.0, y:2024.0, m:12.0) 'prev_pc':0.0493 not equal to 'curr_pc':0.0463 from y:2023.0
+ - for (group:37.0, y:2024.0, m:12.0) 'prev_pc':0.0511 not equal to 'curr_pc':0.0441 from y:2023.0
+
+Run will continue, but if you wish to stop on such errors, change value of 'Consistency curr_pc vs prev_pc check is error' parameter to 'yes'.
+
+ 1.3. Working on lapse_ratio_tbl:
+
+Validation of required columns completed. All the required columns are present in the source lapse_ratio_tbl file. Procedure will continue.
+
+Validation of records completed. No wrong records identified in the source file: lapse_ratio_tbl. Procedure will continue.
+
+Check for potential warnings completed. No records causing warnings identified in the source file: lapse_ratio_tbl. Procedure will continue.
+
+ Duplicates checks completed in file lapse_ratio_tbl. No errors identified.
+
+ Consitency checks completed in file lapse_ratio_tbl. No errors identified.
+
+ 1.4. Working on loss_ratio_tbl:
+
+Validation of required columns completed. All the required columns are present in the source loss_ratio_tbl file. Procedure will continue.
+
+Validation of records completed. No wrong records identified in the source file: loss_ratio_tbl. Procedure will continue.
+
+Check for potential warnings completed. No records causing warnings identified in the source file: loss_ratio_tbl. Procedure will continue.
+
+ Duplicates checks completed in file loss_ratio_tbl. No errors identified.
+
+ Consitency checks completed in file loss_ratio_tbl. No errors identified.
+
+ 1.5. Working on ra_pc_tbl:
+
+Procedure will continue, but there are wrongly formatted records in file: ra_pc_tbl. This records will be removed.The table containining these records is printed below.
+
+Validation of required columns completed. All the required columns are present in the source ra_pc_tbl file. Procedure will continue.
+
+Validation of records completed. No wrong records identified in the source file: ra_pc_tbl. Procedure will continue.
+
+Check for potential warnings completed. No records causing warnings identified in the source file: ra_pc_tbl. Procedure will continue.
+
+ Duplicates checks completed in file ra_pc_tbl. No errors identified.
+
+ There were following problems identified in file ra_pc_tbl:
+
+ - for (group:21.0, y:2023.0, m:12.0) 'prev_pc':0.0587 not equal to 'curr_pc':0.0454 from y:2022.0
+ - for (group:23.0, y:2023.0, m:12.0) 'prev_pc':0.0311 not equal to 'curr_pc':0.0587 from y:2022.0
+ - for (group:1.0, y:2024.0, m:12.0) 'prev_pc':0.0453 not equal to 'curr_pc':0.0449 from y:2023.0
+ - for (group:3.0, y:2024.0, m:12.0) 'prev_pc':0.0369 not equal to 'curr_pc':0.0353 from y:2023.0
+ - for (group:6.0, y:2024.0, m:12.0) 'prev_pc':0.0387 not equal to 'curr_pc':0.0365 from y:2023.0
+ - for (group:8.0, y:2024.0, m:12.0) 'prev_pc':0.0387 not equal to 'curr_pc':0.0365 from y:2023.0
+ - for (group:9.0, y:2024.0, m:12.0) 'prev_pc':0.0387 not equal to 'curr_pc':0.0365 from y:2023.0
+ - for (group:10.0, y:2024.0, m:12.0) 'prev_pc':0.0437 not equal to 'curr_pc':0.0427 from y:2023.0
+ - for (group:13.0, y:2024.0, m:12.0) 'prev_pc':0.06 not equal to 'curr_pc':0.0586 from y:2023.0
+ - for (group:15.0, y:2024.0, m:12.0) 'prev_pc':0.06 not equal to 'curr_pc':0.0569 from y:2023.0
+ - for (group:16.0, y:2024.0, m:12.0) 'prev_pc':0.0646 not equal to 'curr_pc':0.063 from y:2023.0
+ - for (group:17.0, y:2024.0, m:12.0) 'prev_pc':0.0317 not equal to 'curr_pc':0.0307 from y:2023.0
+ - for (group:18.0, y:2024.0, m:12.0) 'prev_pc':0.0442 not equal to 'curr_pc':0.0427 from y:2023.0
+ - for (group:21.0, y:2024.0, m:12.0) 'prev_pc':0.0456 not equal to 'curr_pc':0.0453 from y:2023.0
+ - for (group:23.0, y:2024.0, m:12.0) 'prev_pc':0.06 not equal to 'curr_pc':0.0586 from y:2023.0
+ - for (group:27.0, y:2024.0, m:12.0) 'prev_pc':0.0317 not equal to 'curr_pc':0.0307 from y:2023.0
+ - for (group:28.0, y:2024.0, m:12.0) 'prev_pc':0.0387 not equal to 'curr_pc':0.0365 from y:2023.0
+ - for (group:33.0, y:2024.0, m:12.0) 'prev_pc':0.06 not equal to 'curr_pc':0.0586 from y:2023.0
+ - for (group:37.0, y:2024.0, m:12.0) 'prev_pc':0.0317 not equal to 'curr_pc':0.0307 from y:2023.0
+
+Run will continue, but if you wish to stop on such errors, change value of 'Consistency curr_pc vs prev_pc check is error' parameter to 'yes'.
+
+ 1.6. Working on reins_cost_tbl:
+
+Validation of required columns completed. All the required columns are present in the source reins_cost_tbl file. Procedure will continue.
+
+Validation of records completed. No wrong records identified in the source file: reins_cost_tbl. Procedure will continue.
+
+Check for potential warnings completed. No records causing warnings identified in the source file: reins_cost_tbl. Procedure will continue.
+
+ Duplicates checks completed in file reins_cost_tbl. No errors identified.
+
+ There were following problems identified in file reins_cost_tbl:
+
+ - for (group:1.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.1277 from y:2023.0
+ - for (group:3.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.7071 from y:2023.0
+ - for (group:6.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.8068 from y:2023.0
+ - for (group:8.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.5163 from y:2023.0
+ - for (group:9.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.2172 from y:2023.0
+ - for (group:10.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.7652 from y:2023.0
+ - for (group:13.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.5791 from y:2023.0
+ - for (group:15.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.2581 from y:2023.0
+ - for (group:17.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.5209 from y:2023.0
+ - for (group:18.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.2369 from y:2023.0
+ - for (group:21.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.4909 from y:2023.0
+ - for (group:23.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.7001 from y:2023.0
+ - for (group:27.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.1505 from y:2023.0
+ - for (group:28.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.1521 from y:2023.0
+ - for (group:33.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.2642 from y:2023.0
+ - for (group:37.0, y:2024.0, m:12.0) 'prev_pc':0.0 not equal to 'curr_pc':0.244 from y:2023.0
+
+Run will continue, but if you wish to stop on such errors, change value of 'Consistency curr_pc vs prev_pc check is error' parameter to 'yes'.
+
+ 1.7. Working on reins_default_tbl:
+
+Validation of required columns completed. All the required columns are present in the source reins_default_tbl file. Procedure will continue.
+
+Validation of records completed. No wrong records identified in the source file: reins_default_tbl. Procedure will continue.
+
+Check for potential warnings completed. No records causing warnings identified in the source file: reins_default_tbl. Procedure will continue.
+
+ Duplicates checks completed in file reins_default_tbl. No errors identified.
+
+ Consitency checks completed in file reins_default_tbl. No errors identified.
+
+ All files validated succesfully. Proceeding with upload.
+
+ 2.1 Uploading file: acq_exp_pc_tbl
+
+ File acq_exp_pc_tbl loaded into DB: C:\1_APPS\OWS_17_Data_Preparer\1_input\ifrs17_input_db.accdb
+
+ 2.2 Uploading file: cost_pc_tbl
+
+ File cost_pc_tbl loaded into DB: C:\1_APPS\OWS_17_Data_Preparer\1_input\ifrs17_input_db.accdb
+
+ 2.3 Uploading file: lapse_ratio_tbl
+
+ File lapse_ratio_tbl loaded into DB: C:\1_APPS\OWS_17_Data_Preparer\1_input\ifrs17_input_db.accdb
+
+ 2.4 Uploading file: loss_ratio_tbl
+
+ File loss_ratio_tbl loaded into DB: C:\1_APPS\OWS_17_Data_Preparer\1_input\ifrs17_input_db.accdb
+
+ 2.5 Uploading file: ra_pc_tbl
+
+ File ra_pc_tbl loaded into DB: C:\1_APPS\OWS_17_Data_Preparer\1_input\ifrs17_input_db.accdb
+
+ 2.6 Uploading file: reins_cost_tbl
+
+ File reins_cost_tbl loaded into DB: C:\1_APPS\OWS_17_Data_Preparer\1_input\ifrs17_input_db.accdb
+
+ 2.7 Uploading file: reins_default_tbl
+
+ File reins_default_tbl loaded into DB: C:\1_APPS\OWS_17_Data_Preparer\1_input\ifrs17_input_db.accdb
+
+All ratio files uploaded in C:\1_APPS\OWS_17_Data_Preparer\1_input\ifrs17_input_db.accdb.
