@@ -16,7 +16,7 @@ if getattr(sys, 'frozen', False):
 elif __file__:
     this_path = path.abspath(path.dirname(__file__))
 
-st.title("Wersja 2: Analiza cytotoksyczności: koniugat vs komponenty")
+st.title("Wersja 3: Analiza cytotoksyczności: koniugat vs komponenty")
 
 uploaded_file = st.file_uploader("Wgraj plik DANE.xlsx", type=["xlsx"])
 if uploaded_file:
@@ -139,8 +139,10 @@ if uploaded_file:
 
         plt.tight_layout()
         st.pyplot(fig)
+
+
     def rysuj_wykres_szczegolowy2(dane_we, linia="MDA-MB-231"):
-        st.write("## Wykres słupkowy z porównaniem grup (z testami istotności)")
+        st.write("## Wykres słupkowy z porównaniem grup (z testami istotności i kontrolą 0 MBq/ml)")
 
         kol_dawka = "Dawka (MBq/ml)"
         kol_viability = "Aktywność metaboliczna (%)"
@@ -150,17 +152,18 @@ if uploaded_file:
             return
 
         dane_linia = dane_we[dane_we["Linia"] == linia]
-        dawki = sorted(dane_linia[kol_dawka].dropna().unique())
         czasy = sorted(dane_linia["Czas (h)"].dropna().unique())
         grupy = sorted(dane_linia["Grupa"].dropna().unique())
 
-        fig, axs = plt.subplots(1, len(dawki), figsize=(6 * len(dawki), 6), sharey=True)
+        dawki_bez_0 = sorted([d for d in dane_linia[kol_dawka].dropna().unique() if d != 0.0])
 
-        if len(dawki) == 1:
+        fig, axs = plt.subplots(1, len(dawki_bez_0), figsize=(6 * len(dawki_bez_0), 6), sharey=True)
+
+        if len(dawki_bez_0) == 1:
             axs = [axs]
 
-        for idx_d, dawka in enumerate(dawki):
-            dane_dawka = dane_linia[dane_linia[kol_dawka] == dawka]
+        for idx_d, dawka in enumerate(dawki_bez_0):
+            dane_dawka = dane_linia[(dane_linia[kol_dawka] == dawka) | (dane_linia[kol_dawka] == 0)]
             ax = axs[idx_d]
 
             szerokosc_słupka = 0.15
@@ -179,36 +182,37 @@ if uploaded_file:
                     bledy.append(podzbior.sem())
                 ax.bar(srodek, wartosci, yerr=bledy, width=szerokosc_słupka, label=grupa, capsize=3)
 
-            # TESTY T i GWIAZDKI
-            ymax = dane_dawka[kol_viability].max()
-            offset = ymax * 0.05  # odstęp nad słupkiem
+            # TESTY T: grupa z dawką == 0 vs grupa z daną dawką
+            offset = dane_dawka[kol_viability].max() * 0.05
             for czas in czasy:
-                dane_czas = dane_dawka[dane_dawka["Czas (h)"] == czas]
-                for grupa1, grupa2 in combinations(grupy, 2):
-                    wart1 = dane_czas[dane_czas["Grupa"] == grupa1][kol_viability]
-                    wart2 = dane_czas[dane_czas["Grupa"] == grupa2][kol_viability]
+                for grupa in grupy:
+                    kontrola = dane_linia[(dane_linia[kol_dawka] == 0) & (dane_linia["Czas (h)"] == czas) & (
+                                dane_linia["Grupa"] == grupa)][kol_viability]
+                    badana = dane_linia[(dane_linia[kol_dawka] == dawka) & (dane_linia["Czas (h)"] == czas) & (
+                                dane_linia["Grupa"] == grupa)][kol_viability]
 
-                    if len(wart1) < 2 or len(wart2) < 2:
-                        continue  # za mało danych
+                    if len(kontrola) < 2 or len(badana) < 2:
+                        continue
 
-                    _, p = stats.ttest_ind(wart1, wart2, equal_var=False)
+                    _, p = stats.ttest_ind(kontrola, badana, equal_var=False)
+
                     if p < 0.05:
-                        poziom = "" if p >= 0.01 else "*" if p >= 0.001 else "*"
-                        i1 = grupy.index(grupa1)
-                        i2 = grupy.index(grupa2)
-                        x1 = pozycje_słupków[grupa1][czasy.index(czas)]
-                        x2 = pozycje_słupków[grupa2][czasy.index(czas)]
-                        y = dane_czas[kol_viability].max() + offset
-                        ax.plot([x1, x1, x2, x2], [y, y + offset, y + offset, y], lw=1.2, c="black")
-                        ax.text((x1 + x2) / 2, y + offset * 1.5, poziom, ha='center', va='bottom', fontsize=10)
+                        poziom = "*" if p < 0.001 else "*" if p < 0.01 else ""
+                        x1 = pozycje_słupków[grupa][czasy.index(czas)]
+                        x2 = x1  # nad jednym słupkiem
+                        y = max(kontrola.mean(), badana.mean()) + offset * 2
+                        ax.text(x1, y, poziom, ha='center', va='bottom', fontsize=12, color='black')
 
-            ax.set_title(f"{chr(65 + idx_d)}. {dawka} MBq/ml")
+            ax.set_title(f"{chr(65 + idx_d)}. {dawka} MBq/ml (z kontrolą 0)")
             ax.set_xticks(x)
             ax.set_xticklabels([str(c) for c in czasy])
             ax.set_xlabel("Czas [h]")
             ax.set_ylabel("Aktywność metaboliczna [%]")
             ax.legend(title="Grupa")
             ax.grid(True, axis='y')
+
+        plt.tight_layout()
+        st.pyplot(fig)
 
         plt.tight_layout()
         st.pyplot(fig)
@@ -220,3 +224,45 @@ if uploaded_file:
     rysuj_wykres_szczegolowy(dane_detailed, linia=linia_wybor)
 
     rysuj_wykres_szczegolowy2(dane_detailed, linia=linia_wybor)
+
+    # === Raport tekstowy z testów t dla każdej grupy ===
+    st.write("## Raport statystyczny (t-test: porównanie każdej grupy z kontrolą 0 MBq/ml)")
+
+    raport = ""
+
+    for linia in dane_detailed["Linia"].unique():
+        dane_linia = dane_detailed[dane_detailed["Linia"] == linia]
+        dawki_testowe = sorted([d for d in dane_linia["Dawka (MBq/ml)"].dropna().unique() if d != 0.0])
+        czasy = sorted(dane_linia["Czas (h)"].dropna().unique())
+        grupy = sorted(dane_linia["Grupa"].dropna().unique())
+
+        raport += f"\n### Linia komórkowa: {linia}\n"
+        for dawka in dawki_testowe:
+            for czas in czasy:
+                raport += f"\n**Dawka: {dawka} MBq/ml | Czas: {czas} h**\n"
+                for grupa in grupy:
+                    kontrola = dane_linia[(dane_linia["Dawka (MBq/ml)"] == 0) &
+                                          (dane_linia["Czas (h)"] == czas) &
+                                          (dane_linia["Grupa"] == grupa)]["Aktywność metaboliczna (%)"]
+
+                    badana = dane_linia[(dane_linia["Dawka (MBq/ml)"] == dawka) &
+                                        (dane_linia["Czas (h)"] == czas) &
+                                        (dane_linia["Grupa"] == grupa)]["Aktywność metaboliczna (%)"]
+
+                    if len(kontrola) >= 2 and len(badana) >= 2:
+                        _, p = stats.ttest_ind(kontrola, badana, equal_var=False)
+                        stars = "*" if p < 0.001 else "*" if p < 0.01 else "" if p < 0.05 else ""
+                        interpretacja = "istotna statystycznie" if p < 0.05 else "nieistotna"
+                        raport += (
+                            f"- Grupa *{grupa}*: "
+                            f"średnia kontrola = {kontrola.mean():.2f}, "
+                            f"średnia testowa = {badana.mean():.2f}, "
+                            f"p = {p:.4f} → {interpretacja} {stars}\n"
+                        )
+                    else:
+                        raport += f"- Grupa *{grupa}*: brak danych (za mało pomiarów)\n"
+
+    # Wyświetl raport
+    st.markdown(raport)
+
+
