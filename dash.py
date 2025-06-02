@@ -8,6 +8,7 @@ import seaborn as sns
 import numpy as np
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import scipy.stats as stats
+from itertools import combinations
 
 # Ścieżka lokalna
 if getattr(sys, 'frozen', False):
@@ -15,7 +16,7 @@ if getattr(sys, 'frozen', False):
 elif __file__:
     this_path = path.abspath(path.dirname(__file__))
 
-st.title("Analiza cytotoksyczności: koniugat vs komponenty")
+st.title("Wersja 2: Analiza cytotoksyczności: koniugat vs komponenty")
 
 uploaded_file = st.file_uploader("Wgraj plik DANE.xlsx", type=["xlsx"])
 if uploaded_file:
@@ -92,7 +93,7 @@ if uploaded_file:
 
     # Wykres 2: słupkowy z podziałem na czas i dawkę
     def rysuj_wykres_szczegolowy(dane_we, linia="MDA-MB-231"):
-        st.write("## Wykres słupkowy z porównaniem grup (jak w publikacjach)")
+        st.write("## Wykres słupkowy z porównaniem grup (bez testow istotności)")
 
         # Upewniamy się, że dane zawierają kolumnę 'Dawka (MBq/ml)' i 'Czas (h)'
         if "Dawka (MBq/ml)" not in dane_we.columns or "Czas (h)" not in dane_we.columns:
@@ -138,8 +139,84 @@ if uploaded_file:
 
         plt.tight_layout()
         st.pyplot(fig)
+    def rysuj_wykres_szczegolowy2(dane_we, linia="MDA-MB-231"):
+        st.write("## Wykres słupkowy z porównaniem grup (z testami istotności)")
+
+        kol_dawka = "Dawka (MBq/ml)"
+        kol_viability = "Aktywność metaboliczna (%)"
+
+        if kol_dawka not in dane_we.columns or "Czas (h)" not in dane_we.columns:
+            st.error("Brakuje kolumn 'Dawka (MBq/ml)' lub 'Czas (h)' w danych.")
+            return
+
+        dane_linia = dane_we[dane_we["Linia"] == linia]
+        dawki = sorted(dane_linia[kol_dawka].dropna().unique())
+        czasy = sorted(dane_linia["Czas (h)"].dropna().unique())
+        grupy = sorted(dane_linia["Grupa"].dropna().unique())
+
+        fig, axs = plt.subplots(1, len(dawki), figsize=(6 * len(dawki), 6), sharey=True)
+
+        if len(dawki) == 1:
+            axs = [axs]
+
+        for idx_d, dawka in enumerate(dawki):
+            dane_dawka = dane_linia[dane_linia[kol_dawka] == dawka]
+            ax = axs[idx_d]
+
+            szerokosc_słupka = 0.15
+            x = np.arange(len(czasy))
+
+            pozycje_słupków = {}
+            for idx_g, grupa in enumerate(grupy):
+                srodek = x + (idx_g - len(grupy) / 2) * szerokosc_słupka + szerokosc_słupka / 2
+                pozycje_słupków[grupa] = srodek
+                wartosci = []
+                bledy = []
+                for czas in czasy:
+                    podzbior = dane_dawka[(dane_dawka["Grupa"] == grupa) & (dane_dawka["Czas (h)"] == czas)][
+                        kol_viability]
+                    wartosci.append(podzbior.mean())
+                    bledy.append(podzbior.sem())
+                ax.bar(srodek, wartosci, yerr=bledy, width=szerokosc_słupka, label=grupa, capsize=3)
+
+            # TESTY T i GWIAZDKI
+            ymax = dane_dawka[kol_viability].max()
+            offset = ymax * 0.05  # odstęp nad słupkiem
+            for czas in czasy:
+                dane_czas = dane_dawka[dane_dawka["Czas (h)"] == czas]
+                for grupa1, grupa2 in combinations(grupy, 2):
+                    wart1 = dane_czas[dane_czas["Grupa"] == grupa1][kol_viability]
+                    wart2 = dane_czas[dane_czas["Grupa"] == grupa2][kol_viability]
+
+                    if len(wart1) < 2 or len(wart2) < 2:
+                        continue  # za mało danych
+
+                    _, p = stats.ttest_ind(wart1, wart2, equal_var=False)
+                    if p < 0.05:
+                        poziom = "" if p >= 0.01 else "*" if p >= 0.001 else "*"
+                        i1 = grupy.index(grupa1)
+                        i2 = grupy.index(grupa2)
+                        x1 = pozycje_słupków[grupa1][czasy.index(czas)]
+                        x2 = pozycje_słupków[grupa2][czasy.index(czas)]
+                        y = dane_czas[kol_viability].max() + offset
+                        ax.plot([x1, x1, x2, x2], [y, y + offset, y + offset, y], lw=1.2, c="black")
+                        ax.text((x1 + x2) / 2, y + offset * 1.5, poziom, ha='center', va='bottom', fontsize=10)
+
+            ax.set_title(f"{chr(65 + idx_d)}. {dawka} MBq/ml")
+            ax.set_xticks(x)
+            ax.set_xticklabels([str(c) for c in czasy])
+            ax.set_xlabel("Czas [h]")
+            ax.set_ylabel("Aktywność metaboliczna [%]")
+            ax.legend(title="Grupa")
+            ax.grid(True, axis='y')
+
+        plt.tight_layout()
+        st.pyplot(fig)
+
 
     # Wywołanie wykresu szczegółowego
     # używamy tylko danych detailed
     dane_detailed = pd.concat([mda_detailed, t98g_detailed], ignore_index=True)
     rysuj_wykres_szczegolowy(dane_detailed, linia=linia_wybor)
+
+    rysuj_wykres_szczegolowy2(dane_detailed, linia=linia_wybor)
