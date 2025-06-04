@@ -127,9 +127,9 @@ def draw_detailed_barplot(data, cell_line="MDA-MB-231", hypothesis_group=None):
     st.markdown("### Interpretacja oznaczeń istotności:")
     st.markdown("""
         - ✴️ n.s. – brak istotności (p ≥ 0.05)
-        - ⭐ * – p < 0.05
-        - ⭐⭐ ** – p < 0.01
-        - ⭐⭐⭐ * – p < 0.001  
+        - ⭐ – p < 0.05
+        - ⭐⭐ – p < 0.01
+        - ⭐⭐⭐ – p < 0.001  
         Test jednostronny: czy grupa hipotezy ma niższą aktywność niż pozostałe grupy.
     """)
 
@@ -137,7 +137,7 @@ def draw_detailed_barplot(data, cell_line="MDA-MB-231", hypothesis_group=None):
 # GŁÓWNA APLIKACJA
 # -------------------------
 
-st.title("Wersja 7: Analiza cytotoksyczności – koniugat vs komponenty")
+st.title("Wersja 8: Analiza cytotoksyczności – koniugat vs komponenty")
 
 uploaded_file = st.file_uploader("Wgraj plik DANE.xlsx", type=["xlsx"])
 if uploaded_file:
